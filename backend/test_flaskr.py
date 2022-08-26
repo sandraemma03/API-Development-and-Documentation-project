@@ -64,14 +64,9 @@ class TriviaTestCase(unittest.TestCase):
     def test_delete_question(self):
         res = self.client().delete("/questions/2")
         data = json.loads(res.data)
-
-        # question = Question.query.filter(Question.id == 2).one_or_none()
-        self.assertEqual(res.status_code, 422)
-        self.assertEqual(data["success"], False)
-        # self.assertEqual(data["deleted"], 2)
-        # self.assertTrue(data["total_questions"])
-        # self.assertTrue(len(data["questions"]))
-        # self.assertEqual(question, None)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        
 
     def test_422_if_question_does_not_exist(self):
         res = self.client().delete("/questions/1000")
@@ -102,7 +97,6 @@ class TriviaTestCase(unittest.TestCase):
     def test_search_category(self):
         res = self.client().get("/categories/3/questions")
         data = json.loads(res.data)
-
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
         self.assertTrue(data["total_questions"])
