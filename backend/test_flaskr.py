@@ -43,21 +43,45 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], True)
         self.assertTrue(data["total_questions"])
         self.assertTrue(len(data["questions"]))
-
-    def test_fail_to_get_questions(self):
-        res = self.client().get('/questions')
-        self.assertEqual(res.status_code, 404)
     
+    ## Failure question ##
+    def fail_questions_put(self):
+        res = self.client().put('/questions')
+
+        self.assertEqual(res.status_code, 405)
+    def fail_questions_delete(self):
+        res = self.client().delete('/questions')
+        self.assertEqual(res.status_code, 405)
+
+    def fail_questions_patch(self):
+        res = self.client().patch('/questions')
+        self.assertEqual(res.status_code, 405)
+    
+
     def test_get_categories(self):
         res = self.client().get("/categories")
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
+    
+    ## Failure category ##
+    def fail_category_post(self):
+        res = self.client().post('/categories')
+        self.assertEqual(res.status_code, 405)
+        
+    def fail_category_put(self):
+        res = self.client().put('/categories')
+        self.assertEqual(res.status_code, 405)
 
-    def test_fail_to_get_categories(self):
-        res = self.client().get('/categories')
-        self.assertEqual(res.status_code, 404)  
+    def fail_category_post_delete(self):
+        res = self.client().delete('/categories')
+        self.assertEqual(res.status_code, 405)
+
+    def fail_category_post_patch(self):
+        res = self.client().patch('/categories')
+        self.assertEqual(res.status_code, 405)
+ 
 
     def test_404_sent_requesting_beyond_valid_page(self):
         res = self.client().get("/questions?page=1000", json={"difficulty": 1})
@@ -69,14 +93,14 @@ class TriviaTestCase(unittest.TestCase):
 
     # Delete a different question in each attempt
     def test_delete_question(self):
-        res = self.client().delete("/questions/2")
+        res = self.client().delete("/questions/6")
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
 
     def test_fail_to_delete_question(self):
         res = self.client().get("/questions/500")
-        self.assertEqual(res.status_code, 404)    
+        self.assertEqual(res.status_code, 405)    
 
     def test_422_if_question_does_not_exist(self):
         res = self.client().delete("/questions/1000")
@@ -87,7 +111,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["message"], "unprocessable")
 
     def test_search_questions(self):
-        res = self.client().post("/questions", json=({'searchTerm': 'new'}))
+        res = self.client().post("/questions/search", json=({'searchTerm': 'new'}))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -113,7 +137,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_fail_to_test_quizzes(self):
 
         res = self.client().post("/quizzes", json={})
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 404)
 
     def test_search_category(self):
         res = self.client().get("/categories/3/questions")
@@ -126,7 +150,7 @@ class TriviaTestCase(unittest.TestCase):
     
     def test_fail_test_search_category(self):
         res = self.client().post("/quizzes", json={})
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 404)
 
 
 # Make the tests conveniently executable
